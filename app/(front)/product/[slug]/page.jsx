@@ -1,6 +1,7 @@
 import data from "@/lib/data";
 import Link from "next/link";
 import Image from "next/image";
+import AddToCart from "@/components/products/AddToCart";
 const ProductDetails = ({ params }) => {
   const product = data.products.find((x) => x.slug === params.slug);
   return !product ? (
@@ -52,24 +53,24 @@ const ProductDetails = ({ params }) => {
                 </div>
               </div>
 
-              <div className="card-actions justify-center">
-                {product.countInStock > 0 ? (
-                  <button className="btn btn-primary w-full" type="button">
-                    Add to cart
+              {product.countInStock > 0 ? (
+                <div className="card-actions justify-center">
+                  <AddToCart
+                    item={{ ...product, qty: 0, color: "", size: "" }}
+                  />
+                </div>
+              ) : (
+                <div className="card-actions justify-center">
+                  <button
+                    className="btn btn-disabled"
+                    tabIndex="-1"
+                    role="button"
+                    aria-disabled="true"
+                  >
+                    Out of stock
                   </button>
-                ) : (
-                  <>
-                    <button
-                      className="btn btn-disabled"
-                      tabIndex="-1"
-                      role="button"
-                      aria-disabled="true"
-                    >
-                      Out of stock
-                    </button>
-                  </>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
