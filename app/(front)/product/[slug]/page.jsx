@@ -11,8 +11,8 @@ const ProductDetails = ({ params }) => {
       <div className="my-2">
         <Link href="/">Back to products</Link>
       </div>
-      <div className="grid md:grid-cols-4 md:gap-3">
-        <div className="md:col-span-2">
+      <div className="grid md:grid-cols-4 md:gap-2">
+        <div className="md:col-span-2 flex justify-center items-center">
           <Image
             src={product.image}
             alt={product.name}
@@ -20,7 +20,7 @@ const ProductDetails = ({ params }) => {
             height={640}
             sizes="100vw"
             style={{
-              width: "100%",
+              width: "80%",
               height: "auto",
             }}
           />
