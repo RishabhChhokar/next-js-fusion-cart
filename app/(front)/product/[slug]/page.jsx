@@ -2,6 +2,21 @@ import data from "@/lib/data";
 import Link from "next/link";
 import Image from "next/image";
 import AddToCart from "@/components/products/AddToCart";
+import productService from "@/lib/services/productService";
+
+export const generateMetadata = async ({ params }) => {
+  console.log("Fetching product with slug:", params.slug);
+  const product = await productService.getBySlug(params.slug);
+  if (!product) {
+    return { title: "Product not found" };
+  }
+
+  return {
+    title: product.name,
+    description: product.description,
+  };
+}
+
 const ProductDetails = ({ params }) => {
   const product = data.products.find((x) => x.slug === params.slug);
   return !product ? (
@@ -78,4 +93,5 @@ const ProductDetails = ({ params }) => {
     </>
   );
 };
+
 export default ProductDetails;
