@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import AddToCart from "@/components/products/AddToCart";
 import productService from "@/lib/services/productService";
+import { convertDocToObj } from "@/lib/utils";
 
 export const generateMetadata = async ({ params }) => {
   console.log("Fetching product with slug:", params.slug);
@@ -15,10 +16,10 @@ export const generateMetadata = async ({ params }) => {
     title: product.name,
     description: product.description,
   };
-}
+};
 
-const ProductDetails = ({ params }) => {
-  const product = data.products.find((x) => x.slug === params.slug);
+const ProductDetails = async ({ params }) => {
+  const product = await productService.getBySlug(params.slug);
   return !product ? (
     <div>Product not found!</div>
   ) : (
@@ -71,7 +72,12 @@ const ProductDetails = ({ params }) => {
               {product.countInStock > 0 ? (
                 <div className="card-actions justify-center">
                   <AddToCart
-                    item={{ ...product, qty: 0, color: "", size: "" }}
+                    item={{
+                      ...convertDocToObj(product),
+                      qty: 0,
+                      color: "",
+                      size: "",
+                    }}
                   />
                 </div>
               ) : (
