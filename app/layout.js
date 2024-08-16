@@ -1,8 +1,7 @@
 import Header from "@/components/header/Header";
 import "./globals.css";
-
+import Providers from "@/components/Providers";
 import { Inter } from "next/font/google";
-
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,13 +14,15 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="min-h-screen flex flex-col">
-          <Header />
-          {children}
-          <footer className="footer footer-center p-4 bg-base-300 text-base-content">
-            <p>Copyright © 2024 - All rights reserved by Fusion Cart</p>
-          </footer>
-        </div>
+        <Providers>
+          <div className="min-h-screen flex flex-col">
+            <Header />
+            {children}
+            <footer className="footer footer-center p-4 bg-base-300 text-base-content">
+              <p>Copyright © 2024 - All rights reserved by Fusion Cart</p>
+            </footer>
+          </div>
+        </Providers>
       </body>
     </html>
   );
