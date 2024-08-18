@@ -3,6 +3,7 @@ import { signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import Link from "next/link";
 const Form = () => {
   const { data: session } = useSession();
 
@@ -101,6 +102,12 @@ const Form = () => {
             </button>
           </div>
         </form>
+        <div className="flex justify-center items-center">
+          Need an account?{" "}
+          <Link className="link" href={`/register?callbackUrl=${callbackUrl}`}>
+            Register
+          </Link>
+        </div>
       </div>
     </div>
   );
