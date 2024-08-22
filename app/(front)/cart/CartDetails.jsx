@@ -1,6 +1,6 @@
 "use client";
-import Image from "next/image";
 import useCartService from "@/lib/hooks/useCartStore";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -86,7 +86,7 @@ const CartDetails = () => {
                   </li>
                   <li>
                     <button
-                      onClick={() => router.push('/shipping')}
+                      onClick={() => router.push("/shipping")}
                       className="btn btn-primary w-full"
                     >
                       Proceed to Checkout

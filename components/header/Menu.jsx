@@ -5,13 +5,14 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const Menu = () => {
-  const { items } = useCartService();
+  const { items, clearShippingAddress } = useCartService();
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
   }, []);
   
   const signOutHandler = () => {
+    clearShippingAddress();
     signOut({callback : '/signin'})
   }
   
