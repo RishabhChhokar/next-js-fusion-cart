@@ -10,13 +10,13 @@ const Menu = () => {
   useEffect(() => {
     setMounted(true);
   }, []);
-  
+
   const signOutHandler = () => {
     clearShippingAddress();
-    signOut({callback : '/signin'})
-  }
-  
-  const { data : session} = useSession();
+    signOut({ callback: "/signin" });
+  };
+
+  const { data: session } = useSession();
 
   return (
     <div>

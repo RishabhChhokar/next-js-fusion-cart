@@ -1,15 +1,17 @@
 "use client";
-import CheckoutSteps from "@/components/CheckoutSteps";
-import useCartService from "@/lib/hooks/useCartStore";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import useSWRMutation from "swr/mutation";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
+import useSWR from "swr";
 
-const Form = () => {
-  const router = useRouter();
+export default function OrderDetails({ orderId, payUClientId }) {
+
+  const { data: session } = useSession();
+  const { data, error } = useSWR(`/api/orders/${orderId}`);
+
+  if (error) return error.message;
+  if (!data) return "Loading...";
+
   const {
     paymentMethod,
     shippingAddress,
@@ -18,60 +20,17 @@ const Form = () => {
     taxPrice,
     shippingPrice,
     totalPrice,
-    clear,
-  } = useCartService();
-
-  const { trigger: placeOrder, isMutating: isPlacing } = useSWRMutation(
-    `/api/orders/mine`,
-    async (url) => {
-      const res = await fetch("/api/orders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          paymentMethod,
-          shippingAddress,
-          items,
-          itemsPrice,
-          taxPrice,
-          shippingPrice,
-          totalPrice,
-        }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        clear();
-        toast.success("Order placed successfully");
-        return router.push(`/order/${data.order._id}`);
-      } else {
-        toast.error(data.message);
-      }
-    }
-  );
-  useEffect(() => {
-    if (!paymentMethod) {
-      return router.push("/payment");
-    }
-    if (items.length === 0) {
-      return router.push("/");
-    }
-    
-  }, [paymentMethod, router]);
-
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return <></>;
+    isDelivered,
+    deliveredAt,
+    isPaid,
+    paidAt,
+  } = data;
 
   return (
     <div>
-      <CheckoutSteps current={4} />
-
+      <h1 className="text-2xl py-4">Order {orderId}</h1>
       <div className="grid md:grid-cols-4 md:gap-5 my-4">
-        <div className="overflow-x-auto md:col-span-3">
+        <div className="md:col-span-3">
           <div className="card bg-base-300">
             <div className="card-body">
               <h2 className="card-title">Shipping Address</h2>
@@ -80,11 +39,11 @@ const Form = () => {
                 {shippingAddress.address}, {shippingAddress.city},{" "}
                 {shippingAddress.postalCode}, {shippingAddress.country}{" "}
               </p>
-              <div>
-                <Link className="btn" href="/shipping">
-                  Edit
-                </Link>
-              </div>
+              {isDelivered ? (
+                <div className="text-success">Delivered at {deliveredAt}</div>
+              ) : (
+                <div className="text-error">Not Delivered</div>
+              )}
             </div>
           </div>
 
@@ -92,11 +51,11 @@ const Form = () => {
             <div className="card-body">
               <h2 className="card-title">Payment Method</h2>
               <p>{paymentMethod}</p>
-              <div>
-                <Link className="btn" href="/payment">
-                  Edit
-                </Link>
-              </div>
+              {isPaid ? (
+                <div className="text-success">Paid at {paidAt}</div>
+              ) : (
+                <div className="text-error">Not Paid</div>
+              )}
             </div>
           </div>
 
@@ -126,23 +85,16 @@ const Form = () => {
                             height={50}
                           ></Image>
                           <span className="px-2">
-                            {item.name}({item.color} {item.size})
+                            {item.name} ({item.color} {item.size})
                           </span>
                         </Link>
                       </td>
-                      <td>
-                        <span>{item.qty}</span>
-                      </td>
+                      <td>{item.qty}</td>
                       <td>₹{item.price}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              <div>
-                <Link className="btn" href="/cart">
-                  Edit
-                </Link>
-              </div>
             </div>
           </div>
         </div>
@@ -151,43 +103,30 @@ const Form = () => {
           <div className="card bg-base-300">
             <div className="card-body">
               <h2 className="card-title">Order Summary</h2>
-              <ul className="space-y-3">
+              <ul>
                 <li>
-                  <div className=" flex justify-between">
+                  <div className="mb-2 flex justify-between">
                     <div>Items</div>
                     <div>₹{itemsPrice}</div>
                   </div>
                 </li>
                 <li>
-                  <div className=" flex justify-between">
+                  <div className="mb-2 flex justify-between">
                     <div>Tax</div>
                     <div>₹{taxPrice}</div>
                   </div>
                 </li>
                 <li>
-                  <div className=" flex justify-between">
+                  <div className="mb-2 flex justify-between">
                     <div>Shipping</div>
                     <div>₹{shippingPrice}</div>
                   </div>
                 </li>
                 <li>
-                  <div className=" flex justify-between">
+                  <div className="mb-2 flex justify-between">
                     <div>Total</div>
                     <div>₹{totalPrice}</div>
                   </div>
-                </li>
-
-                <li>
-                  <button
-                    onClick={() => placeOrder()}
-                    disabled={isPlacing}
-                    className="btn btn-primary w-full"
-                  >
-                    {isPlacing && (
-                      <span className="loading loading-spinner"></span>
-                    )}
-                    Place Order
-                  </button>
                 </li>
               </ul>
             </div>
@@ -196,5 +135,4 @@ const Form = () => {
       </div>
     </div>
   );
-};
-export default Form;
+}
