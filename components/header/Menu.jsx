@@ -5,15 +5,19 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const Menu = () => {
-  const { items, clearShippingAddress } = useCartService();
+  const { items, init } = useCartService();
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const signOutHandler = () => {
-    clearShippingAddress();
-    signOut({ callback: "/signin" });
+  const signOutHandler = async () => {
+    try {
+      await signOut({ callbackUrl: "/signin" });
+      init();
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
   };
 
   const { data: session } = useSession();
@@ -56,6 +60,9 @@ const Menu = () => {
                   tabIndex={0}
                   className="menu dropdown-content z-[1] p-2 shadow bg-base-300 rounded-box w-52 "
                 >
+                  <li>
+                    <Link href="/order-history">Order history</Link>
+                  </li>
                   <li>
                     <button type="button" onClick={signOutHandler}>
                       Sign out
